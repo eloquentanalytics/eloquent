@@ -1,8 +1,6 @@
-# eloquent
+# **eloquent**: A unified semantic data modeling language designed for the age of LLMs. 
 
-#### **Eloquent**: A unified semantic data modeling language designed for the age of LLMs. 
-
-Use natural language to describe your data in a markdown-like format and generate various products from it.
+*Use natural language to describe your data in a markdown-like format and generate various products from it.*
 
 **Author's Note**: Eloquent grew from my experience with very large enterprise data architectures and I've been evolving it based on real experiences with clients. If you choose to use Eloquent, any experience you can share about using the language, how it feels, where it behaves unexpectedly or where it appears redundant is much appreciated. Contributions of additional output products are gladly accepted under a "only we can make a SAAS version of this" license.
 
@@ -18,6 +16,7 @@ Use natural language to describe your data in a markdown-like format and generat
 - [**ERD Diagrams**](#erd-diagrams): Visualizations of the data model showing relationships between entities.
 - **DBT-Compatible Data Models**: Generate models that integrate seamlessly with DBT for transformation workflows.
 - **External Data Governance**: Sync the model with external tools like Microsoft Purview or Collibra
+- **VSCode Extension**: Syntax highlighting and linting for VSCode
 
 This is an Eloquent data model:
 
