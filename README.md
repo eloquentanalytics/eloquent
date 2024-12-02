@@ -61,13 +61,13 @@ What the knowledge graph would look like if it was backed by a database. You can
 
 ```bash
 > eloquent describe physical
-Person
+physical_person
 - person_id: String
 - person_name: String
-Customer
+physical_customer
 - customer_id: String
 - customer_zipcode: String
-Order
+physical_order
 - order_id: String
 - order_date: Date
 - customer_id: String
