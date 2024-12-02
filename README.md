@@ -52,7 +52,7 @@ Order
 - Customer Person
 - Customer Person Name
 Order is many to one Customer
-Customer is one to one Person
+Customer is a subset of Person
 ```
 
 ### The Physical Layer
