@@ -17,7 +17,7 @@ Coming soon:
 
 This is an Eloquent data model:
 
-```eloquent
+```markdown
 **Person**: A person or organization
 - Person has a Name
 - Customer is a Person with at least one Order
