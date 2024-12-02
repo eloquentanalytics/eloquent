@@ -215,21 +215,8 @@ When was the first ever order placed? => SELECT MIN(order_date) FROM logical_ord
 
 Generate a visual representation of the model that can be used to understand the relationships between the entities.
 
-```bash
-> eloquent erd physical
-{image}
-> eloquent erd logical
-{image}
-```
-
 ### Data Catalog
 
 Generate a data catalog that contains all the information in the model plus additional context from the descriptions as either a PDF or a collection of HTML pages. This can be used to understand the data model and how it can be navigated and attractively printed.
 
-```bash
-> eloquent catalog pdf
-{pdf}
-> eloquent catalog html
-{html}
-```
 
