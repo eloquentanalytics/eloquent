@@ -1,19 +1,23 @@
 # eloquent
 
-#### Eloquent is a unified semantic data modelling language designed by and for the age of LLMs. 
+#### **Eloquent**: A unified semantic data modeling language designed for the age of LLMs. 
 
-Use natural language to describe your data in a markdown-like text file and use it to generate a wide range of different products:
-* Knowledge graph of interrelated concepts
-* Physical target database schema showing which parts of the graph are available to query
+Use natural language to describe your data in a markdown-like format and generate various products from it.
 
-Coming soon:
-* DBT-compatible data model files
-* Logical matrix of analytical views adding layers of calculation, aggregation and denormalization
-* SQL Test scripts to enforce constraints
-* RAG-compatible versions of the various entities
-* Other configuration files for data catalogs and metadata services
-* Generate Natural Language to SQL question/answer pairs
-* Data catalog containing all this information plus additional context from the descriptions
+**Author's Note**: Eloquent grew from my experience with very large enterprise data architectures and I've been evolving it based on real experiences with clients. If you choose to use Eloquent, any experience you can share about using the language, how it feels, where it behaves unexpectedly or where it appears redundant is much appreciated. Contributions of additional output products are gladly accepted under a "only we can make a SAAS version of this" license.
+
+- [**Knowledge Graph**](#the-knowledge-graph): A graph of interrelated concepts based on your model, forming the source of truth for the entire framework.
+- [**Physical Target Database Schema**](#the-physical-layer): A detailed view of how the model would look in a database, showing which parts of the graph are available to query.
+- [**SQL Test Scripts**](#sql-test-scripts): Automatically generated SQL tests to validate your data model’s integrity.
+- [**RAG-Compatible Versions**](#rag-compliant-models): Create representations of your model that are ready for vector databases and LLMs.
+- [**Natural Language to SQL**](#natural-language-to-sql): Generate question-answer pairs in natural language that can be transformed into SQL queries.
+- [**Data Catalog**](#data-catalog): A fully generated PDF or HTML catalog of your data model, including context from the model’s descriptions.
+- [**Expanded Logical Views**](#expanded-logical-views): Logical entities extracted from the physical schema to enhance analysis.
+- [**Observability Scripts**](#observability-scripts): Scripts to monitor and ensure the health of the data model over time.
+- [**Aggregations and Metrics Matrix**](#aggregations-and-metrics-matrix): Standardized transformations and aggregations for reporting and analytics.
+- [**ERD Diagrams**](#erd-diagrams): Visualizations of the data model showing relationships between entities.
+- **DBT-Compatible Data Models**: Generate models that integrate seamlessly with DBT for transformation workflows.
+- **External Data Governance**: Sync the model with external tools like Microsoft Purview or Collibra
 
 This is an Eloquent data model:
 
@@ -37,7 +41,7 @@ A markdown-like syntax represents the metadata in a semi-structured text format.
 
 ### The Knowledge Graph
 
-The core layer is the list of the concepts and their relationships. This is the source of truth for the model and is used to generate all the other layers. 
+The core list of the concepts and their relationships. This is the source of truth for the model and is used to generate all the other outputs. 
 
 ```bash
 > eloquent describe graph
@@ -51,8 +55,8 @@ Order
 - Customer Zipcode
 - Customer Person
 - Customer Person Name
-Order is many to one Customer
-Customer is a subset of Person
+Customers make Orders
+A Customer is a Person who has made at least one Order
 ```
 
 ### The Physical Layer
@@ -80,17 +84,20 @@ CREATE TABLE statements that can be used to create the physical tables in a part
 ```bash
 > eloquent create physical mysql
 CREATE TABLE physical_person (
-  person_id VARCHAR(255),
+  person_id VARCHAR(255) PRIMARY KEY,
   person_name VARCHAR(255)
 );
+
 CREATE TABLE physical_customer (
-  customer_id VARCHAR(255),
+  customer_id VARCHAR(255) PRIMARY KEY,
   customer_zipcode VARCHAR(255)
 );
+
 CREATE TABLE physical_order (
-  order_id VARCHAR(255),
+  order_id VARCHAR(255) PRIMARY KEY,
   order_date DATE,
-  customer_id VARCHAR(255)
+  customer_id VARCHAR(255),
+  FOREIGN KEY (customer_id) REFERENCES physical_customer(customer_id)
 );
 ```
 
@@ -105,6 +112,7 @@ SELECT
   person_id,
   person_name
 FROM physical_person;
+
 CREATE VIEW logical_customer AS
 SELECT
   customer_id,
@@ -112,6 +120,7 @@ SELECT
   person_id,
   person_name
 FROM physical_customer;
+
 CREATE VIEW logical_order AS
 SELECT
   order_id,
@@ -122,7 +131,7 @@ SELECT
   person_name
 FROM physical_order
 JOIN physical_customer ON order.customer_id = customer.customer_id
-JOIN physical_person ON customer.person_id = person.person_id;
+JOIN physical_person ON customer.customer_id = person.person_id;
 ```
 
 ### SQL Test Scripts
@@ -190,6 +199,19 @@ CREATE VIEW order_count_by_customer_zipcode_and_order_date_month AS SELECT custo
 ...
 ```
 
+### Natural Language to SQL
+
+Generate a set of natural language to SQL question/answer pairs that can be used to query the data model or train a chatbot or other natural language interface to the data.
+
+```bash
+> eloquent nlp mysql 5
+What is the name of the person with person_id '12345'? => SELECT person_name FROM logical_person WHERE person_id = '12345';
+How many orders have been placed by the customer with customer_id '12345'? => SELECT COUNT(*) FROM logical_order WHERE customer_id = '12345';
+What is the total number of orders placed by customers in zipcode '10000'? => SELECT COUNT(*) FROM logical_order WHERE customer_zipcode = '10000';
+When was the most recent order placed by the customer with customer_id '12345'? => SELECT MAX(order_date) FROM logical_order WHERE customer_id = '12345';
+When was the first ever order placed? => SELECT MIN(order_date) FROM logical_order;
+```
+
 ### ERD Diagrams
 
 Generate a visual representation of the model that can be used to understand the relationships between the entities.
@@ -212,16 +234,3 @@ Generate a data catalog that contains all the information in the model plus addi
 {html}
 ```
 
-### Natural Language to SQL
-
-Generate a set of natural language to SQL question/answer pairs that can be used to query the data model. This can be used to generate a chatbot or other natural language interface to the data.
-
-```bash
-> eloquent nlp sql
-What is the name of the person with person_id '12345'? => SELECT person_name FROM logical_person WHERE person_id = '12345';
-How many orders have been placed by the customer with customer_id '12345'? => SELECT COUNT(*) FROM logical_order WHERE customer_id = '12345';
-What is the total number of orders placed by customers in zipcode '10000'? => SELECT COUNT(*) FROM logical_order WHERE customer_zipcode = '10000';
-When was the most recent order placed by the customer with customer_id '12345'? => SELECT MAX(order_date) FROM logical_order WHERE customer_id = '12345';
-When was the first ever order placed? => SELECT MIN(order_date) FROM logical_order;
-...
-```
